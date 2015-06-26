@@ -4,24 +4,27 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
    
-    <context:component-scan base-package="user.*,aop"/>
+    <context:component-scan base-package="user.*,aop,tx"/>
     <aop:aspectj-autoproxy/>
+    <tx:annotation-driven transaction-manager="txManager"/>
     
     <!-- Basic DataSource 설정 -->
-    <!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
        p:driverClassName="oracle.jdbc.OracleDriver"
        p:url="jdbc:oracle:thin:@localhost:1521:xe"
        p:username="hr"
-       p:password="hr"/> -->
+       p:password="hr"/>
     
-    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     	<property name="jndiName" value="jdbc/myoracle"/>
     	<property name="resourceRef" value="true"/>
-    </bean>
+    </bean> -->
     
     <!--  Spring DB 설정 -->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -45,13 +48,28 @@
           <constructor-arg index="0" ref="sqlSessionFactoryBean" />
     </bean>
     
-    
+    <!-- message 처리를 위한 설정 -->
     <bean  id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
           <property name="basenames">
               <value>messages.message</value>
           </property>
     </bean>
-
+    
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+	<!-- <tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:pointcut expression="execution(* tx.*Service.add*(..)))" id="txp"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txp"/>
+	</aop:config> -->
+	
     <!-- <bean id="advice" class="aop.Advice"/>
     
     <aop:config>

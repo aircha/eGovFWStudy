@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import user.service.UserService;
 import user.vo.UserVO;
+import validator.UserValidator;
 
 @Controller
 public class UserController {
@@ -36,8 +39,13 @@ public class UserController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value="/user/add.do")
-	public String getUserProc(UserVO vo) {
-		service.addUser(vo);
+	public String userProc(@ModelAttribute("user") UserVO user, BindingResult errors) {
+		new UserValidator().validate(user, errors);
+		
+		if (errors.hasFieldErrors())
+			return "user/user_form";
+		
+		service.addUser(user);
 		return "redirect:/user/list.do";
 	}
 	

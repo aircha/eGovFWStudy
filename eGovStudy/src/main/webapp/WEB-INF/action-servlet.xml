@@ -2,7 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 	<context:component-scan base-package="controller"/>
@@ -10,5 +12,20 @@
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/view/"/>
 		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 다국어 처리를 위한 CookieLocalResolver 등록 -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>
+	
+	<!-- 다국어 변경 LocaleChangeInterceptor 추가 -->
+	<mvc:interceptors>
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<property name="paramName" value="lang"></property>
+		</bean>
+	</mvc:interceptors>
+	
+	<!-- 파일 업로드 CommonsMultipartResolver -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="100000"/>
 	</bean>
 </beans>

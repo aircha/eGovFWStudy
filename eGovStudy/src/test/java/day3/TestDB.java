@@ -28,7 +28,6 @@ public class TestDB {
 	
 	@Test
 	public void daoTest() {
-		UserService service = (UserService) context.getBean("service");
 		UserVO vo = service.login("admin", "a1234");
 		logger.debug(vo);
 		Assert.assertNotNull(vo.toString());

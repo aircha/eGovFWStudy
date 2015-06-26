@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import user.vo.UserVO;
 
@@ -35,10 +37,6 @@ public class UserDAOImpl_Mybatis implements UserDAO{
 	}
 	@Override
 	public List<UserVO> getUserList() {
-		System.out.println("UserDAOImpl_Mybatis : "+session);
-		System.out.println();
-		//return session.selectList("user.list");
-		System.out.println("인터페이스 기반 연동");
 		return session.getMapper(mapper.UserMapper.class).list();
 	}
 	@Override
