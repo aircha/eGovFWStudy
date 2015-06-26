@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+   
+    <context:component-scan base-package="user.*,aop"/>
+    <aop:aspectj-autoproxy/>
+    
+    <!-- Basic DataSource 설정 -->
+    <!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+       p:driverClassName="oracle.jdbc.OracleDriver"
+       p:url="jdbc:oracle:thin:@localhost:1521:xe"
+       p:username="hr"
+       p:password="hr"/> -->
+    
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    	<property name="jndiName" value="jdbc/myoracle"/>
+    	<property name="resourceRef" value="true"/>
+    </bean>
+    
+    <!--  Spring DB 설정 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+       <constructor-arg ref="dataSource"/>
+    </bean>
+    
+    <!-- iBatis 설정 -->
+    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+         <property name="dataSource" ref="dataSource" />
+         <property name="configLocations" 
+                   value="classpath:ibatisconfig.xml"/>
+    </bean>
+    
+    <!-- MyBatis 설정 -->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+         <property name="dataSource" ref="dataSource" />
+         <property name="configLocation" value="classpath:/mybatisconfig.xml"/>
+         <property name="mapperLocations" value="classpath:/sqlmap/usermapper_m.xml" />
+    </bean>
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+          <constructor-arg index="0" ref="sqlSessionFactoryBean" />
+    </bean>
+    
+    
+    <bean  id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+          <property name="basenames">
+              <value>messages.message</value>
+          </property>
+    </bean>
+
+    <!-- <bean id="advice" class="aop.Advice"/>
+    
+    <aop:config>
+         <aop:pointcut id="pc"
+  expression="execution(* user.service.*Service.login(..))"/>    
+         <aop:aspect ref="advice">
+         
+             <aop:after-throwing method="log" 
+                   pointcut-ref="pc" throwing="e"/>
+                   
+             <aop:around method="alog"
+                   pointcut-ref="pc" />   
+                      
+         </aop:aspect>   
+    </aop:config>
+     -->
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="product.dao.ProductDAO">
+	<select id="getProduct" resultType="product.model.ProductVO">
+		select * from products where pcode = #{pcode}
+	</select>
+	
+	<select id="getProductList" resultType="product.model.ProductVO">
+		select * from products
+	</select>
+	
+	<insert id="addProduct">
+		insert into products
+		(pcode,pname,price,quant,pdesc)
+		values (#{pcode},#{pname},#{price},#{quant},#{pdesc})
+	</insert>
+	
+	<update id="modifyProduct">
+		update products
+		set pname = #{pname},
+		    price = #{price},
+		    quant = #{quant},
+		    pdesc = #{pdesc}
+		where pcode = #{pcode}
+	</update>
+	
+	<delete id="removeProduct">
+		delete products where pcode = #{pcode}
+	</delete>
+</mapper>

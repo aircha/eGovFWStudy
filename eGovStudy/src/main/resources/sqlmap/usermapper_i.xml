@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+     <!-- <typeAlias alias="vo" type="user.vo.UserVO"/> -->
+     
+	 <insert id="add" parameterClass="user.vo.UserVO">
+	  	insert into userinfo 
+	  	(userid, username, userpwd, email, phone, address) 
+	  	values (#userid#, #username#, #userpwd#, #email#, #phone#,#address#)
+	 </insert> 
+	 
+	 <select id="login" parameterClass="user.vo.UserVO"
+	                    resultClass="user.vo.UserVO" >
+	 	select * from userinfo 
+	 	where userid = #userid# and userpwd = #userpwd#
+	 </select>
+	 
+	 <select id="getuser" resultClass="user.vo.UserVO" 
+	                      parameterClass="java.lang.String">
+		 select * from userinfo 
+		 where userid = #userid#
+	 </select>
+	 
+	 <select id="list" resultClass="user.vo.UserVO">
+	 	select * from userinfo  
+	 </select>
+	 
+	 <update id="update" parameterClass="user.vo.UserVO">
+	 	update userinfo set email=#email#,phone=#phone#,address=#address# 
+	 	where  userid  = #userid# 
+	 </update>
+	 <delete id="delete" >
+	 	delete from userinfo 
+	 	where  userid  = #userid# 
+	</delete>
+	
+</sqlMap>
