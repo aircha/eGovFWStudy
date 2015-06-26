@@ -1,0 +1,453 @@
+
+http://www.egovframe.go.kr/
+
+환경설정
+jdk : JAVA_HOME 설정  
+egovframe  :  eclipse.ini     -vm
+                                        C:/Program Files/Java/jdk1.7.0_60/bin/javaw.exe
+  
+톰켓     : 포트변경
+오라클   : alter user hr identified by hr account unlock;
+
+
+DB 연결정보
+driver=oracle.jdbc.OracleDriver
+url=jdbc:oracle:thin:@localhost:1521:xe
+user=hr
+pwd=hr
+
+
+p33
+drop table userinfo;
+drop table board;
+create table userinfo (
+	userid varchar2(15) primary key,
+	username varchar2(20),
+	userpwd varchar2(10),
+	email varchar2(50),
+	phone varchar2(15),
+	address varchar2(100)
+);
+
+create table board (
+	seq number (5) primary key,
+	title varchar2(20),
+	writer varchar2(10),
+	content varchar2(50),
+	regdate date default sysdate,
+	cnt number(5) default 0
+);
+
+insert into userinfo (userid, username, userpwd, email, phone, address)
+values ('admin', '관리자', 'a1234', 'admin@multicampus.co.kr', '02-1234', '서울');
+insert into userinfo (userid, username, userpwd, email, phone, address)
+values ('user01', '길동이', '1234', 'user01@multicampus.co.kr', '02-1234', '서울');
+
+insert into board(seq, title, writer,content) values (1, '처음올리는 글', '관리자','잘 부탁드립니다.');
+commit;
+
+
+
+
+ String add = "insert into userinfo (userid, username, userpwd, email, phone, address) values (?, ?, ?,?,?,?)";
+ String login = "select * from userinfo where userid=? and userpwd = ?";
+ String user1 = "select * from userinfo where userid = ?";
+ String list = "select * from userinfo ";
+ String update = "update userinfo set email=?,phone=?,address=? where  userid  = ? ";
+ String delete = "delete from userinfo where  userid  = ? ";
+
+
+
+********  pom.xml에 ***********
+
+<!-- oracle driver -->
+	   <repository>
+		   <id>oracle</id>
+		   <name>ORACLE JDBC Repository</name>
+		   <url>http://maven.jahia.org/maven2</url>
+	    </repository>
+
+<!-- oracle driver -->
+	 <dependency>
+		    <groupId>com.oracle</groupId>
+		    <artifactId>ojdbc6</artifactId>
+		    <version>11.1.0.7.0</version>
+	</dependency>
+
+<!-- DataSource 관련 -->
+
+	<dependency>
+		    <groupId>commons-dbcp</groupId>
+		    <artifactId>commons-dbcp</artifactId>
+		    <version>1.4</version>
+        </dependency>
+
+
+
+	<!-- iBatis -->    
+	<dependency>
+		 <groupId>org.apache.ibatis</groupId>
+		 <artifactId>ibatis-sqlmap</artifactId>
+		 <version>2.3.4.726</version>
+	</dependency>
+
+
+<!--  MyBatis 관련 -->
+	       
+               <dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.3</version>
+		</dependency>
+ 
+                <dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+
+		<!--  MyBatis 관련 -->
+	<dependency>
+            <groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.2</version>
+	</dependency>
+	<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.0</version>
+	</dependency>
+
+
+<!--  FileUPload  관련 -->
+
+
+		<dependency>
+		       <groupId>commons-fileupload</groupId>
+		       <artifactId>commons-fileupload</artifactId>
+		       <version>1.2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+
+                <dependency>
+		       <groupId>commons-fileupload</groupId>
+		       <artifactId>commons-fileupload</artifactId>
+		       <version>1.2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+
+<!--  systemPath  관련 -->
+
+		<dependency>
+		       <groupId>ojdbc</groupId>
+		       <artifactId>ojdbc</artifactId>
+		       <version>14</version>
+		       <scope>system</scope>
+		       <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc14.jar</systemPath>
+		</dependency>
+
+
+<!--  junit  관련 -->
+
+
+		<dependency>
+		       <groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.maven.artifact.version}</version>
+		</dependency>
+
+<!--  mail 전송  관련 -->
+
+                <dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+
+
+
+***** 스프링 설정 파일 *********************
+
+<context:annotation-config/>
+ 	<context:component-scan base-package="controller,example"/>
+ 	
+
+
+ 	<!-- BasicDataSource DBCP를이용한설정예시 -->
+	<!-- DataSource JDBC driver를 이용한  Database Connection 구현체이다 -->  
+
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+           p:driverClassName="oracle.jdbc.OracleDriver"
+           p:url="jdbc:oracle:thin:@127.0.0.1:1521:xe"
+           p:username="hr"
+           p:password="hr"/>
+
+
+
+
+        
+
+  <!-- Spring의 DAO 프레임워크의 JdbcTemplate 빈 설정-->
+    <bean id="jdbcTemplete" class="org.springframework.jdbc.core.JdbcTemplate">
+          <constructor-arg ref="dataSource"/>
+    </bean> 
+    
+ <!-- iBatis 설정 -->
+    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+          <property name="configLocation" value="SqlMapconfig.xml"/>
+          <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+ <!--MyiBatis 설정 -->
+
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" ></property>
+        <property name="mapperLocations" value="classpath:com/ko/notice/dao/mapper/*.xml"></property>
+</bean>
+<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg> 
+</bean>
+
+
+
+<!-- JNDI기반의설정설정예시 -->
+<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+	<property name="jndiName" value="jdbc/oracle" />
+	<property name="resourceRef" value="true" />
+</bean>
+
+
+  
+<bean id="messageSource"  
+	   class="org.springframework.context.support.ResourceBundleMessageSource">
+	      <property name="basenames">
+	         <value>message.message</value>
+	      </property>
+	</bean>
+
+
+<bean id="multipartResolver"
+  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+           <property name="maxUploadSize" value="1000000" />
+</bean>
+
+
+	
+
+  <!-- 1. HandlerMapping 등록 -->
+<bean id="handlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	<property name="mappings">
+		<props>
+			<prop key="/login.do">login</prop>
+		</props>
+	</property>
+</bean> 
+ 
+<!-- 2. Controller 들 등록 -->
+<bean id="login" class="controller.LoginController"/>
+
+<!--3.  ViewResolver 설정  -->
+<bean id="viewResolver"
+ class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix"  value="/WEB-INF/view/" />
+		<property name="suffix"  value=".jsp" /> 	 
+ 
+</bean>
+
+
+
+
+
+
+
+
+<!-- Locale 변경 설정 -->
+
+<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>
+    <bean id="localeChangeInterceptor" 
+          class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+          <property name="paramName" value="locale"/>
+    </bean>
+    
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+       <property name="interceptors">
+          <list>
+              <ref bean="localeChangeInterceptor"/>             
+          </list>
+       </property>
+       <property name="mappings">
+         <value>/test.do=AController</value>
+       </property>
+    </bean> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*** WEB.XML *****
+
+<context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j2.xml</param-value>
+ </context-param>
+
+
+
+<!-- 필터는 서블릿 앞에 post 방식의 인코딩 설정 필터 등록 -->
+        <filter>
+   		<filter-name>encodingFilter</filter-name>
+   		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+  		<init-param>
+       		     <param-name>encoding</param-name>
+    	             <param-value>utf-8</param-value>
+	        </init-param>
+	</filter>  
+
+	<filter-mapping>
+	    <filter-name>encodingFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping> 
+  
+  
+  <!-- 스프링 설정 파일을 지정하지 않으면 action-servlet.xml을 찾는다 -->
+  <servlet>
+          <servlet-name>action</servlet-name>
+	  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>  
+  </servlet>
+  <servlet-mapping>
+         <servlet-name>action</servlet-name>
+        <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+
+
+
+  <!-- 스프링 설정 파일을 지정하는 경우 -->
+<servlet>
+    <servlet-name>dispatcher</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/dispatcher.xml</param-value>
+    </init-param>
+</servlet>
+<servlet-mapping>
+	<servlet-name>dispatcher</servlet-name>
+	<url-pattern>*.do</url-pattern>
+</servlet-mapping>
+
+
+
+
+
+<context-param>
+	<param-name>contextConfigLocation</param-name>
+	<param-value>classpath:applicationContext.xml</param-value>
+</context-param>
+
+<listener>
+	<listener-class>
+		org.springframework.web.context.ContextLoaderListener
+	</listener-class>
+</listener>
+
+<listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+  <!-- <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>classpath:log4j.xml</param-value>
+  </context-param> -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j2.xml</param-value>
+  </context-param>
+
+
+
+
+
+
+
+*****  jsp 페이지 *******************
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+
+
+************* server.xml   JNDI DataSource *******************************
+      
+		 <Resource auth="Container"
+		 driverClassName="oracle.jdbc.OracleDriver" 
+		 maxActive="8" maxIdle="4" 
+		 name="jdbc/oracle" 
+		 password="hr" type="javax.sql.DataSource" 
+		 url="jdbc:oracle:thin:@localhost:1521:xe" 
+		 username="hr"/> 
+ 
+  </GlobalNamingResources>
+
+<Context docBase="eGov04_MVC" path="/eGov04_MVC" reloadable="true" source="org.eclipse.jst.jee.server:eGov04_MVC">
+              <Resource name="jdbc/oracle" 
+               auth="Container"
+               type="javax.sql.DataSource" 
+               driverClassName="oracle.jdbc.OracleDriver"
+               url="jdbc:oracle:thin:@127.0.0.1:1521:xe"
+               username="hr" password="hr" maxActive="20" maxIdle="10"
+               maxWait="-1"/>
+              
+      </Context>
+
+
+
+<Connector port="8080"       maxHttpHeaderSize="8192"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" redirectPort="8443" acceptCount="100"
+               connectionTimeout="20000" disableUploadTimeout="true" 
+URIEncoding="euc-kr"/>
+
+<Connector port="8009" 
+               enableLookups="false" redirectPort="8443" protocol="AJP/.3" 
+URIEncoding="euc-kr"/>
+
+
+
+
+
+
+
+
+
+
+      <!-- JNDI기반의설정설정예시 -->
+<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+	<property name="jndiName" value="jdbc/oracle" />
+	<property name="resourceRef" value="true" />
+</bean>
